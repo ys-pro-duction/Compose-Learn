@@ -7,10 +7,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.yogesh.composelearn.navigation.simple.screen.DETAILS_DATA_KEY
 import com.yogesh.composelearn.navigation.simple.screen.DetailsScreen
 import com.yogesh.composelearn.navigation.simple.screen.HomeScreen
 import com.yogesh.composelearn.navigation.simple.screen.Screen
@@ -31,8 +35,13 @@ class MainActivity : ComponentActivity() {
                         composable(route = Screen.HOME.route){
                             HomeScreen(navController)
                         }
-                        composable(route = Screen.DETAIL.route){
-                            DetailsScreen(navController)
+                        composable(route = Screen.DETAIL.route, arguments = listOf(navArgument(
+                            DETAILS_DATA_KEY
+                        ) {
+                            type = NavType.StringType
+                        })){
+
+                            DetailsScreen(navController,it.arguments?.getString(DETAILS_DATA_KEY))
                         }
                     }
                 }
