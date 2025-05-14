@@ -1,4 +1,4 @@
-package com.yogesh.composelearn
+package com.yogesh.composelearn.btn_input_image
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,6 +9,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
@@ -57,7 +59,8 @@ import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.yogesh.composelearn.ui.theme.ComposeLearnTheme
+import com.yogesh.composelearn.R
+import com.yogesh.composelearn.btn_input_image.ui.theme.ComposeLearnTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -268,12 +271,15 @@ fun NetworkImageLoad(modifier: Modifier = Modifier) {
         placeholder = painterResource(R.drawable.ic_launcher_background),
         contentDescription = "null",
         contentScale = ContentScale.Crop,
-        modifier = Modifier.clip(CircleShape).aspectRatio(2f))
+        modifier = Modifier.size(200.dp).clip(CircleShape).aspectRatio(1f).border(10.dp, Brush.linearGradient(
+            listOf(Color.Blue, Color.Cyan, Color.Green)
+        ), CircleShape))
     val image = rememberAsyncImagePainter(ImageRequest.Builder(LocalContext.current)
         .data("https://camo.githubusercontent.com/fd890f47fdaf39f0db67fc9cd8950027949eac6cce9aa444bb42cba65ec5fb37/68747470733a2f2f692e706f7374696d672e63632f4878634c435239622f5369676e2d75702d776974682d676f6f676c652d627574746f6e2e706e67")
         .crossfade(true)
         .build())
-    Image(image,null,modifier = Modifier.shadow(12.dp))
+
+    Image(image,null,modifier = Modifier.padding(20.dp).size(100.dp).shadow(12.dp))
 }
 
 @Composable

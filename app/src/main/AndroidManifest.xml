@@ -16,6 +16,11 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".search_widget.MainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.ComposeLearn" />
+        <activity
             android:name=".navigation.bottomsheet.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
@@ -30,6 +35,11 @@
             android:exported="true"
             android:label="@string/title_activity_main2"
             android:theme="@style/Theme.ComposeLearn" />
+        <activity
+            android:name=".btn_input_image.MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.ComposeLearn"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"

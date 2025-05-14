@@ -1,4 +1,4 @@
-package com.yogesh.composelearn.ui.theme
+package com.yogesh.composelearn.search_widget.ui.theme
 
 import android.app.Activity
 import android.os.Build
