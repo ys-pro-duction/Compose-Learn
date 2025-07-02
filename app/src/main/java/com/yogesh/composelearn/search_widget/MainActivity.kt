@@ -1,10 +1,12 @@
 package com.yogesh.composelearn.search_widget
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,11 +27,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yogesh.composelearn.R
@@ -37,15 +40,17 @@ import com.yogesh.composelearn.search_widget.ui.theme.ComposeLearnTheme
 
 class MainActivity : ComponentActivity() {
     private val viewModel by viewModels<SearchViewModel>()
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
         setContent {
             ComposeLearnTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AppBar(viewModel = viewModel,innerPadding.calculateTopPadding())
+                Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
 
+                }) {
+                    AppBar(viewModel = viewModel, it)
                 }
             }
         }
@@ -53,13 +58,13 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppBar(viewModel: SearchViewModel, topPadding: Dp) {
+fun AppBar(viewModel: SearchViewModel, innerPadding: PaddingValues) {
     val appBarType = viewModel.appBar.collectAsState()
     if (appBarType.value == APP_BAR.NORMAL) {
-        TopAppNormalBar(topPadding, openSearchBox = {viewModel.updateAppBar(APP_BAR.SEARCH)})
+        TopAppNormalBar(innerPadding, openSearchBox = {viewModel.updateAppBar(APP_BAR.SEARCH)})
     } else {
         TopSearchAppBar(
-            topPadding,
+            innerPadding,
             viewModel = viewModel,
             onCloseInput = { viewModel.updateAppBar(APP_BAR.NORMAL) },
             updateSearchText = { viewModel.updateText(it) },
@@ -69,9 +74,10 @@ fun AppBar(viewModel: SearchViewModel, topPadding: Dp) {
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppNormalBar(topPadding: Dp, openSearchBox: () -> Unit) {
+fun TopAppNormalBar(topPadding: PaddingValues, openSearchBox: () -> Unit) {
     Scaffold(topBar = {
         TopAppBar(
             title = {
@@ -87,16 +93,15 @@ fun TopAppNormalBar(topPadding: Dp, openSearchBox: () -> Unit) {
                 }
             })
     }) {
-        println(it)
-
 
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopSearchAppBar(
-    topPadding: Dp,
+    innerPadding: PaddingValues,
     viewModel: SearchViewModel,
     onCloseInput: () -> Unit,
     updateSearchText: (String) -> Unit,
@@ -105,13 +110,13 @@ fun TopSearchAppBar(
     val text = viewModel.searchText.collectAsState()
 
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = topPadding)
+        Modifier.fillMaxWidth().padding(innerPadding).height(56.dp), color = MaterialTheme.colorScheme.primaryContainer
     ) {
         TextField(
+            modifier = Modifier
+                .fillMaxWidth(),
             value = text.value,
-            onValueChange = { updateSearchText(it) },
+            onValueChange = updateSearchText,
             leadingIcon = { Icon(painterResource(R.drawable.search), null) },
             trailingIcon = {
                 IconButton({
@@ -120,10 +125,7 @@ fun TopSearchAppBar(
                     } else updateSearchText("")
                 }) { Icon(painterResource(R.drawable.close), null) }
             },
-            placeholder = { Text("Search here...") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
+            placeholder = { Text("Search here...", modifier = Modifier.alpha(0.7f)) },
             singleLine = true,
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
@@ -142,6 +144,5 @@ fun TopSearchAppBar(
 fun GreetingPreview4() {
     ComposeLearnTheme {
 //        TopAppNormalBar()
-        TopSearchAppBar(0.dp, viewModel(SearchViewModel::class.java), {}, {}, {})
     }
 }

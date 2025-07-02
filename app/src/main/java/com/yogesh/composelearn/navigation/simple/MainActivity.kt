@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -31,17 +30,20 @@ class MainActivity : ComponentActivity() {
             ComposeLearnTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     println(innerPadding)
-                    NavHost(navController, startDestination = Screen.HOME.route){
-                        composable(route = Screen.HOME.route){
+                    NavHost(navController, startDestination = Screen.HOME.route) {
+                        composable(route = Screen.HOME.route) {
                             HomeScreen(navController)
                         }
-                        composable(route = Screen.DETAIL.route, arguments = listOf(navArgument(
-                            DETAILS_DATA_KEY
+                        composable(
+                            route = Screen.DETAIL.route, arguments = listOf(
+                                navArgument(
+                                    DETAILS_DATA_KEY
+                                ) {
+                                    type = NavType.StringType
+                                })
                         ) {
-                            type = NavType.StringType
-                        })){
 
-                            DetailsScreen(navController,it.arguments?.getString(DETAILS_DATA_KEY))
+                            DetailsScreen(navController, it.arguments?.getString(DETAILS_DATA_KEY))
                         }
                     }
                 }

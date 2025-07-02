@@ -46,6 +46,8 @@ fun Greeting2(modifier: Modifier = Modifier) {
         intentButton("Simple Navigation",MainActivity::class.java,LocalContext.current)
         intentButton("Bottom Navigation",com.yogesh.composelearn.navigation.bottomsheet.MainActivity::class.java,LocalContext.current)
         intentButton("Search widget",com.yogesh.composelearn.search_widget.MainActivity::class.java,LocalContext.current)
+        intentButton("Shimmer effect",com.yogesh.composelearn.animatedShimmereffect.MainActivity::class.java,LocalContext.current)
+        intentButton("Splash screen",com.yogesh.composelearn.splashScreen.MainActivity::class.java,LocalContext.current)
     }
 }
 @Composable
