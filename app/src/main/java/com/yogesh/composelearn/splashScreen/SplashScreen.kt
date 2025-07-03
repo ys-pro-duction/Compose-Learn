@@ -17,16 +17,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.yogesh.composelearn.R
 
 @Composable
-fun SplashScreen(navHostController: NavHostController) {
+@Preview(showBackground = true)
+fun SplashScreen(navHostController: NavHostController = rememberNavController()) {
     val alphaState = remember { mutableStateOf(false) }
     val alphaAnimation = animateFloatAsState(
         targetValue = if (alphaState.value) 1f else 0f, animationSpec = tween(3000)
     )
-    Splash(alphaAnimation)
+    Splash(alphaAnimation.value)
     LaunchedEffect(true) {
         alphaState.value = true
         // Simulate a delay for splash screen
@@ -37,10 +40,10 @@ fun SplashScreen(navHostController: NavHostController) {
 }
 
 @Composable
-fun Splash(alpha: State<Float>) {
+fun Splash(alpha: Float) {
     Box(
         modifier = Modifier
-            .alpha(alpha.value)
+            .alpha(alpha)
             .fillMaxSize()
             .background(if (isSystemInDarkTheme()) Color.Black else Color.White)
     ) {

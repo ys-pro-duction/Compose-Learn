@@ -8,7 +8,7 @@ class ImageRepository {
         JSONArray(
             """[
             
-      {"name": "Sunset Beach", "url": "https://picsum.photos/id/101/200/300"},
+      {"name": "SunsetSunsetSunset Beach", "url": "https://picsum.photos/id/101/200/300"},
       {"name": "Mountain View", "url": "https://picsum.photos/id/102/200/300"},
       {"name": "City Skyline", "url": "https://picsum.photos/id/103/200/300"},
       {"name": "Forest Path", "url": "https://picsum.photos/id/104/200/300"},
