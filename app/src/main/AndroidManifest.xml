@@ -16,6 +16,21 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".bottom_sheet.MainActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.ComposeLearn" />
+        <activity
+            android:name=".timer.MainActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.ComposeLearn" />
+        <activity
+            android:name=".rotatingKnobe.VolumeKnobe"
+            android:exported="false"
+            android:label="@string/title_activity_volume_knobe"
+            android:theme="@style/Theme.ComposeLearn" />
+        <activity
             android:name=".splashScreen.MainActivity"
             android:exported="false"
             android:label="@string/title_activity_main"

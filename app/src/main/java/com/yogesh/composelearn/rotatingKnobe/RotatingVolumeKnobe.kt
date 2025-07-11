@@ -1,4 +1,4 @@
-package com.yogesh.rotatingKnobe
+package com.yogesh.composelearn.rotatingKnobe
 
 import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
@@ -17,9 +17,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,7 +47,7 @@ import kotlin.math.atan2
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun RotatingVolumeKnobe(modifier: Modifier = Modifier) {
-    Box (modifier = Modifier.background(Color.White).padding(56.dp).fillMaxSize(), contentAlignment = Alignment.Center){
+    Box (modifier = modifier.background(Color.White).padding(56.dp).fillMaxSize(), contentAlignment = Alignment.Center){
         Box(modifier = Modifier.aspectRatio(2f/3f).shadow(60.dp,RoundedCornerShape(16.dp)).clip(RoundedCornerShape(20.dp)).background(Color.White), contentAlignment = Alignment.Center) {
             val volume = remember { mutableFloatStateOf(0f) }
             Knobe {
@@ -55,7 +57,8 @@ fun RotatingVolumeKnobe(modifier: Modifier = Modifier) {
             Text(
                 "${(volume.floatValue * 100).toInt()}%",
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
             )
             VolumeBar(
                 modifier = Modifier
@@ -75,7 +78,9 @@ fun Knobe(
     val centerOffest = remember { mutableStateOf(Offset.Zero) }
     val volumeState = remember { mutableFloatStateOf(0f) }
     val isEnable = remember { mutableStateOf(true) }
-    val animeDp = animateDpAsState(if (isEnable.value)  90.dp * volumeState.floatValue else 0.dp, tween())
+    val animeDp = animateDpAsState(if (isEnable.value)  90.dp * volumeState.floatValue else 0.dp, tween(0))
+    var pressing by remember { mutableStateOf(false) }
+    val scaleAnim = animateDpAsState(if (pressing)  200.dp*1.1f else 200.dp, tween())
     Image(
         painterResource(R.drawable.knobe), null, modifier = Modifier
             .onGloballyPositioned({
@@ -83,7 +88,7 @@ fun Knobe(
                     Offset(it.boundsInRoot().size.width / 2, it.boundsInRoot().size.height / 2)
 //            Log.d("TAG", "Knobe: Bounds: $centerOffest")
             })
-            .size(200.dp)
+            .size(scaleAnim.value)
             .shadow(animeDp.value, CircleShape, spotColor = Color.Blue)
             .clip(CircleShape)
             .clickable {
@@ -100,6 +105,11 @@ fun Knobe(
                     while (true) {
                         val event = awaitPointerEvent()
                         val change = event.changes.firstOrNull()
+                        if (event.type == PointerEventType.Press){
+                            pressing = true
+                        }else if (event.type == PointerEventType.Release){
+                            pressing = false
+                        }
                         change?.let {
                             if (
 //                            event.type == PointerEventType.Press
@@ -111,9 +121,11 @@ fun Knobe(
                                     centerOffest.value.y - position.y
                                 ) * (180 / PI)
                                 val angle = if (_angel < 0) -_angel else 365 - _angel
-                                val finalVolume =
+                                var finalVolume =
                                     (angle - (limitDegree)) / (365 - (2 * limitDegree))
-                                if (angle < limitDegree || angle > 365 - limitDegree) return@let
+//                                if (angle < limitDegree || angle > 365 - limitDegree) return@let
+                                if (angle < limitDegree) finalVolume = 0.0
+                                else if (angle > 365 - limitDegree) finalVolume = 1.0
                                 if (!isEnable.value) isEnable.value = true
                                 Log.d("TAG", "Knobe: $position,       ${centerOffest.value}")
 //                            Log.d("TAG", "Knobe: $volume")
