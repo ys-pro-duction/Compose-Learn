@@ -146,6 +146,7 @@ fun textFeildsExample(modifier: Modifier = Modifier) {
 }
 
 @Composable
+@Preview
 fun googleLogIn(modifier: Modifier = Modifier) {
     var logining by remember { mutableStateOf(false) }
     Button(
@@ -200,6 +201,7 @@ fun googleLogIn(modifier: Modifier = Modifier) {
 }
 
 @Composable
+@Preview
 fun GoogleButton(
     modifier: Modifier = Modifier,
     text: String = "Sign Up with Google",
@@ -209,7 +211,7 @@ fun GoogleButton(
     borderColor: Color = Color.LightGray,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     progressIndicatorColor: Color = MaterialTheme.colorScheme.primary,
-    onClicked: () -> Unit,
+    onClicked: () -> Unit = {},
 ) {
     var clicked by remember { mutableStateOf(false) }
     Surface(

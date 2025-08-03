@@ -58,6 +58,8 @@ fun Greeting2(modifier: Modifier = Modifier) {
         intentButton("Rotating volume knob", VolumeKnobe::class.java,LocalContext.current)
         intentButton("Timer", com.yogesh.composelearn.timer.MainActivity::class.java,LocalContext.current)
         intentButton("Botom sheet", com.yogesh.composelearn.bottom_sheet.MainActivity::class.java,LocalContext.current)
+        intentButton("Navigation drawer", com.yogesh.composelearn.navigation.navigation_drawer.MainActivity::class.java,LocalContext.current)
+        intentButton("Counter", com.yogesh.composelearn.counter.MainActivity::class.java,LocalContext.current)
     }
 }
 @Composable
