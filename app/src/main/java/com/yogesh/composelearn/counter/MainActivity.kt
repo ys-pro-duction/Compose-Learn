@@ -9,6 +9,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
@@ -76,15 +77,18 @@ class MainActivity : ComponentActivity() {
                     else c[i].toString()
 
                     AnimatedContent(char, transitionSpec = {
-                        if (count > oldCount) (fadeIn() + slideInVertically(
+                        if (count > oldCount) (scaleIn(
+                            initialScale = .5f,
+                            animationSpec = tween(700)
+                        ) + fadeIn() + slideInVertically(
                             animationSpec = spring(
                                 0.5f, 200f
                             )
                         ) { it }).togetherWith((slideOutVertically { -it } + fadeOut()))
                         else (fadeIn() + slideInVertically { -it }).togetherWith(
-                                (slideOutVertically(
-                                    animationSpec = tween(100)
-                                ) { it } + fadeOut()))
+                            (slideOutVertically(
+                            animationSpec = tween(100)
+                        ) { it } + fadeOut()))
                     }) {
                         Text(it, fontSize = 50.sp)
                     }
