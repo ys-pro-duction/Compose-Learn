@@ -31,6 +31,16 @@
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.ComposeLearn" />
         <activity
+            android:name=".parallax_image_list.MainActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.ComposeLearn" />
+        <activity
+            android:name=".lazycolumn_item_animation.MainActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.ComposeLearn" />
+        <activity
             android:name=".bottom_sheet.MainActivity"
             android:exported="false"
             android:label="@string/title_activity_main"
