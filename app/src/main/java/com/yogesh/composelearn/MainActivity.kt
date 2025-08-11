@@ -63,6 +63,7 @@ fun Greeting2(modifier: Modifier = Modifier) {
         intentButton("Navigation drawer", com.yogesh.composelearn.navigation.navigation_drawer.MainActivity::class.java,LocalContext.current)
         intentButton("Counter", com.yogesh.composelearn.counter.MainActivity::class.java,LocalContext.current)
         intentButton("Multi screen size", com.yogesh.composelearn.multi_screensize.MainActivity::class.java,LocalContext.current)
+        intentButton("AGSL", com.yogesh.composelearn.agsl.MainActivity::class.java,LocalContext.current)
     }
 }
 @Composable
