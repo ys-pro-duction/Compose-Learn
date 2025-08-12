@@ -19,18 +19,26 @@ import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ColumnScope.VerticleGradient(modifier: Modifier = Modifier, f: Float) {
+fun ColumnScope.HorizontalGradient(modifier: Modifier = Modifier, f: Float) {
     val shadderCode = """
-        uniform float2 res;
-        uniform half time;
-        half4 main( float2 coord){
-            float2 uv = coord / res;
-            half3 red = half3(1.0,0.0,0.0);
-            half3 blue = half3(0.0,0.0,1.0);
-            float fac = sin(uv.y*50.0+time);
-            return half4(mix(red,blue,fac),1.0);
-            
-        }
+uniform float time;
+uniform vec2 resolution;
+
+half4 main(vec2 fragCoord) {
+    vec2 uv = fragCoord / resolution;
+
+    // Horizontal wavy motion
+    float wave = sin(uv.x * 20.0 + time * 2.0);
+
+    // Convert wave to 0–1
+    float intensity = 0.5 + 0.5 * wave;
+
+    // Color with wave in red, repeating stripes in blue
+    float stripes = step(0.5, fract(uv.y * 10.0 + time));
+
+    return half4(intensity, 0.0, stripes, 1.0);
+}
+
     """.trimIndent()
 
     val time = remember { mutableStateOf(0f) }
@@ -46,7 +54,7 @@ fun ColumnScope.VerticleGradient(modifier: Modifier = Modifier, f: Float) {
         })
         .weight(weight.value)) {
         drawIntoCanvas {
-            shader.setFloatUniform("res",size.width,size.height)
+            shader.setFloatUniform("resolution",size.width,size.height)
             shader.setFloatUniform("time",time.value)
             drawRect(ShaderBrush(shader))
             it.drawRect(size.toRect(), Paint().apply { this.asFrameworkPaint().shader = shader })
@@ -54,8 +62,8 @@ fun ColumnScope.VerticleGradient(modifier: Modifier = Modifier, f: Float) {
     }
     LaunchedEffect(weight.value > 2) {
         while (weight.value > 2){
-            delay(17)
-            time.value += 0.15f
+            time.value += 0.05f
+            delay(20)
         }
     }
 }

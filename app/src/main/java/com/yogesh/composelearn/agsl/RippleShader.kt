@@ -7,6 +7,8 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -19,7 +21,7 @@ import org.intellij.lang.annotations.Language
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 @Language("AGSL")
-fun RippleShader(modifier: Modifier = Modifier) {
+fun ColumnScope.RippleShader(modifier: Modifier = Modifier, f: Float) {
     val shaderCode = """
         uniform float2 resolution;
         uniform float time;
@@ -50,15 +52,25 @@ fun RippleShader(modifier: Modifier = Modifier) {
     val shader = remember() { RuntimeShader(shaderCode) }
     val time = remember { mutableStateOf(0f) }
     val animatedTime = animateFloatAsState(time.value, animationSpec = tween(1100, easing = LinearEasing))
-    Canvas(modifier) {
+    val weight = remember { mutableStateOf(f) }
+
+    Canvas(modifier = modifier
+        .clickable(onClick = {
+            if (weight.value <= 1f) {
+                weight.value = Integer.MAX_VALUE.toFloat()
+            } else {
+                weight.value = f
+            }
+        })
+        .weight(weight.value)) {
         shader.setFloatUniform("resolution", size.width, size.height)
         shader.setFloatUniform("time", animatedTime.value)
         drawRect(ShaderBrush(shader))
 
     }
     val currentTime = remember { System.currentTimeMillis() }
-    LaunchedEffect(Unit) {
-        while (true) {
+    LaunchedEffect(weight.value > 2) {
+        while (weight.value > 2){
             time.value = ((System.currentTimeMillis() - currentTime) / 35).toFloat()
             delay(1000)
         }

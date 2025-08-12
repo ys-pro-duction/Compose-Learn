@@ -19,18 +19,26 @@ import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ColumnScope.VerticleGradient(modifier: Modifier = Modifier, f: Float) {
+fun ColumnScope.WavePattern(modifier: Modifier = Modifier, f: Float) {
     val shadderCode = """
-        uniform float2 res;
-        uniform half time;
-        half4 main( float2 coord){
-            float2 uv = coord / res;
-            half3 red = half3(1.0,0.0,0.0);
-            half3 blue = half3(0.0,0.0,1.0);
-            float fac = sin(uv.y*50.0+time);
-            return half4(mix(red,blue,fac),1.0);
-            
-        }
+uniform float uTime;
+uniform vec2 resolution;
+
+half4 main(vec2 fragCoord) {
+    // Normalize coords
+    vec2 uv = fragCoord / resolution;
+
+    // Wave along X axis
+    float wave = sin(uv.x * 20.0 + uTime * 2.0)+sin(uv.y*30+uTime);
+
+    // Map -1..1 to 0..1
+    float brightness = step(wave * 0.5 + 0.5,abs(sin(uTime/2)));
+
+    return half4(wave, wave * 0.5 + 0.5, brightness, 1.0);
+}
+
+
+
     """.trimIndent()
 
     val time = remember { mutableStateOf(0f) }
@@ -46,16 +54,16 @@ fun ColumnScope.VerticleGradient(modifier: Modifier = Modifier, f: Float) {
         })
         .weight(weight.value)) {
         drawIntoCanvas {
-            shader.setFloatUniform("res",size.width,size.height)
-            shader.setFloatUniform("time",time.value)
+            shader.setFloatUniform("resolution",size.width,size.height)
+            shader.setFloatUniform("uTime",time.value)
             drawRect(ShaderBrush(shader))
             it.drawRect(size.toRect(), Paint().apply { this.asFrameworkPaint().shader = shader })
         }
     }
     LaunchedEffect(weight.value > 2) {
         while (weight.value > 2){
-            delay(17)
-            time.value += 0.15f
+            time.value += 0.05f
+            delay(20)
         }
     }
 }
