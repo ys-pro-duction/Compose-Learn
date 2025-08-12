@@ -87,8 +87,8 @@ class MainActivity : ComponentActivity() {
                         ) { it }).togetherWith((slideOutVertically { -it } + fadeOut()))
                         else (fadeIn() + slideInVertically { -it }).togetherWith(
                             (slideOutVertically(
-                            animationSpec = tween(100)
-                        ) { it } + fadeOut()))
+                                animationSpec = tween(100)
+                            ) { it } + fadeOut()))
                     }) {
                         Text(it, fontSize = 50.sp)
                     }

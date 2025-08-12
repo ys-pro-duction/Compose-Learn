@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,8 +47,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting2(modifier: Modifier = Modifier) {
-    val scrollState = ScrollableState{it}
-    Column(modifier.fillMaxSize().scrollable(state = scrollState, orientation = Orientation.Vertical), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier.fillMaxSize().verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
         intentButton("Button Input Image",com.yogesh.composelearn.btn_input_image.MainActivity::class.java,LocalContext.current)
         intentButton("Lazy list",LazyColumnImp::class.java,LocalContext.current)
         intentButton("Simple Navigation",MainActivity::class.java,LocalContext.current)
@@ -70,12 +70,4 @@ fun Greeting2(modifier: Modifier = Modifier) {
 fun intentButton(name: String, activity: Class<*>,context: Context) {
     Button({ context.startActivity(Intent(context,activity))}
         , modifier = Modifier.fillMaxWidth(0.8f)) { Text(name) }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview3() {
-    ComposeLearnTheme {
-        Greeting2()
-    }
 }

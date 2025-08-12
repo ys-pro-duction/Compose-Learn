@@ -25,7 +25,8 @@ class MainActivity : ComponentActivity() {
             ComposeLearnTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 //                    GradientRactangle(modifier = Modifier.fillMaxSize())
-                    RippleShader(modifier = Modifier.fillMaxSize())
+//                    RippleShader(modifier = Modifier.fillMaxSize())
+                    VerticleGradient(modifier = Modifier.fillMaxSize())
                 }
             }
         }
