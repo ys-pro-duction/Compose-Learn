@@ -32,11 +32,19 @@ fun ColumnScope.OverlayPatternsImages(modifier: Modifier = Modifier, f: Float) {
     
 
     half4 main(vec2 fragCoord) {
-        vec2 uv = fragCoord / resolution;
-        vec2 pixel = 1.0 / resolution; // Size of 1 pixel in UV space
+        vec2 uv = fragCoord / resolution -0.5;
+        vec2 pixel = 1.0 / fragCoord; // Size of 1 pixel in UV space
         
-        float dist = length(uv)-0.5;
-        return mix(uBitmap.eval(fragCoord),half4(sin(uTime),sin(uTime),sin(uTime),1.0),step(mod((uv.y *20) ,2),100.0*pixel.x));
+        float hori = step(fract(uv.y*resolution.y/resolution.x * 10.0+uTime+uv.x + uv.y), 0.2 );
+        float ver = step(fract(uv.x * 10.0+uTime+uv.x + uv.y),0.2); // uv.x + uv.y for diagonal
+        uv.x *= resolution.x/resolution.y;
+        float dist = length(uv)*2;
+        half4 vintage = half4(0.0,0.0,0.0,dist);
+//        return uBitmap.eval(fragCoord)+atan(uv.x,uv.y);
+        half4 color = uBitmap.eval(fragCoord);
+        color = mix(color, half4(1.0),max(hori,ver)*0.4);
+        color = mix(color, vintage,dist);
+        return color;
     }
 
     """.trimIndent()

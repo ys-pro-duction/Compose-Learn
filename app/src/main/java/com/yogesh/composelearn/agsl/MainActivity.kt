@@ -36,6 +36,9 @@ class MainActivity : ComponentActivity() {
                         BitmapInShader(modifier = Modifier.fillMaxSize(),1f)
                         BlurSharpen(modifier = Modifier.fillMaxSize(),1f)
                         OverlayPatternsImages(modifier = Modifier.fillMaxSize(),1f)
+                        TouchCircle(modifier = Modifier.fillMaxSize(),1f)
+                        InstStyleFilter(modifier = Modifier.fillMaxSize(),1f)
+                        Noise(modifier = Modifier.fillMaxSize(),1f)
                     }
                 }
             }
