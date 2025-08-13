@@ -24,7 +24,7 @@ import kotlinx.coroutines.delay
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 // TODO: NOT WORKING
-fun ColumnScope.BlurSharpen(modifier: Modifier = Modifier, f: Float) {
+fun ColumnScope.OverlayPatternsImages(modifier: Modifier = Modifier, f: Float) {
     val shadderCode = """
     uniform float uTime;
     uniform vec2 resolution;
@@ -34,32 +34,9 @@ fun ColumnScope.BlurSharpen(modifier: Modifier = Modifier, f: Float) {
     half4 main(vec2 fragCoord) {
         vec2 uv = fragCoord / resolution;
         vec2 pixel = 1.0 / resolution; // Size of 1 pixel in UV space
-    
-        half4 col = half4(0.0);
-    
-        // 3x3 blur kernel
-//        for (int x = -1; x <= 1; x++) {
-//            for (int y = -1; y <= 1; y++) {
-//                vec2 offset = vec2(x, y) * pixel;
-//                col += uBitmap.eval(uv + offset);
-//            }
-//        }
-//        col /= 9.0; // Average the 9 samples
-
         
-        col += uBitmap.eval(uv + vec2(-1, -1) * pixel) * 0.0;
-        col += uBitmap.eval(uv + vec2(-1, 0) * pixel) * -1.0;
-        col += uBitmap.eval(uv + vec2(-1, 1) * pixel) * 0.0;
-        col += uBitmap.eval(uv + vec2(0, -1) * pixel) * -1.0;
-        col += uBitmap.eval(uv + vec2(0, 0) * pixel) * 5.0;
-        col += uBitmap.eval(uv + vec2(0, 1) * pixel) * -1.0;
-        col += uBitmap.eval(uv + vec2(1, -1) * pixel) * 0.0;
-        col += uBitmap.eval(uv + vec2(1, 0) * pixel) * -1.0;
-        col += uBitmap.eval(uv + vec2(1, 1) * pixel) * 0.0;
-        
-    
-    
-        return col;
+        float dist = length(uv)-0.5;
+        return mix(uBitmap.eval(fragCoord),half4(sin(uTime),sin(uTime),sin(uTime),1.0),step(mod((uv.y *20) ,2),100.0*pixel.x));
     }
 
     """.trimIndent()

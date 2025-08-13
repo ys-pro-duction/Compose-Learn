@@ -35,6 +35,7 @@ class MainActivity : ComponentActivity() {
                         AnimatedShape(modifier = Modifier.fillMaxSize(),1f)
                         BitmapInShader(modifier = Modifier.fillMaxSize(),1f)
                         BlurSharpen(modifier = Modifier.fillMaxSize(),1f)
+                        OverlayPatternsImages(modifier = Modifier.fillMaxSize(),1f)
                     }
                 }
             }
