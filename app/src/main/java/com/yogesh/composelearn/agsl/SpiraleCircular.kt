@@ -19,7 +19,7 @@ import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ColumnScope.RadialGradient(modifier: Modifier = Modifier, f: Float) {
+fun ColumnScope.SpiraleCircular(modifier: Modifier = Modifier, f: Float) {
     val shadderCode = """
 uniform float uTime;
 uniform vec2 resolution;
@@ -29,19 +29,14 @@ half4 main(vec2 fragCoord) {
     vec2 uv = fragCoord / resolution - 0.5;
     uv.x *= resolution.x / resolution.y;
 
-    // Rotate over time
-//    float angle = uTime * 0.5;
-//    float s = sin(angle);
-//    float c = cos(angle);
-//    uv = vec2(uv.x * c - uv.y * s, uv.x * s + uv.y * c);
+    float angleFromCenter = atan(uv.y, uv.x);
 
     // Radial distance
     float dist = length(uv);
+    float pattern = dist + angleFromCenter * 0.005;
+    float brightness = 0.5 + 0.5 * sin(pattern * 200.0 - uTime*5);
 
-    // Gradient from center outwards
-    float brightness = smoothstep(0.5, 0.0, dist);
-
-    return half4(brightness,brightness,brightness, 1.0);
+    return half4(brightness, 0.0, brightness, 1.0);
 }
 
     """.trimIndent()

@@ -31,6 +31,10 @@ class MainActivity : ComponentActivity() {
                         DrawShapes(modifier = Modifier.fillMaxSize(),1f)
                         WavePattern(modifier = Modifier.fillMaxSize(),1f)
                         RadialGradient(modifier = Modifier.fillMaxSize(),1f)
+                        SpiraleCircular(modifier = Modifier.fillMaxSize(),1f)
+                        AnimatedShape(modifier = Modifier.fillMaxSize(),1f)
+                        BitmapInShader(modifier = Modifier.fillMaxSize(),1f)
+                        BlurSharpen(modifier = Modifier.fillMaxSize(),1f)
                     }
                 }
             }

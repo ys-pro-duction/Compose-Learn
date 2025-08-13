@@ -19,29 +19,42 @@ import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ColumnScope.RadialGradient(modifier: Modifier = Modifier, f: Float) {
+fun ColumnScope.AnimatedShape(modifier: Modifier = Modifier, f: Float) {
     val shadderCode = """
 uniform float uTime;
 uniform vec2 resolution;
 
 half4 main(vec2 fragCoord) {
-    // Normalize & center
+    // Normalize
     vec2 uv = fragCoord / resolution - 0.5;
     uv.x *= resolution.x / resolution.y;
 
-    // Rotate over time
-//    float angle = uTime * 0.5;
-//    float s = sin(angle);
-//    float c = cos(angle);
-//    uv = vec2(uv.x * c - uv.y * s, uv.x * s + uv.y * c);
+    // Moving rectangle distance
+    float angle = uTime; // rotation speed
+mat2 rot = mat2(cos(angle), -sin(angle),
+                sin(angle),  cos(angle));
+vec2 rotatedUV = rot * uv;
 
-    // Radial distance
-    float dist = length(uv);
+vec2 rectSize = vec2(0.3, 0.1);
+vec2 d = abs(rotatedUV) - rectSize;
+float rectDist = length(max(d, 0.0));
 
-    // Gradient from center outwards
-    float brightness = smoothstep(0.5, 0.0, dist);
 
-    return half4(brightness,brightness,brightness, 1.0);
+    // Circle distance
+    float circleDist = length(uv)*abs(sin(uTime)*2) - 0.10;
+
+    // Combine: intersaction of circle and rectangle
+    float shape = max(circleDist, rectDist);
+    // Combine: union of circle and rectangle
+    float shape2 = min(circleDist, rectDist);
+    // Combine: minus of circle and rectangle
+    float shape3 = max(-circleDist, rectDist);
+
+    // Color
+    float inside = smoothstep(0.01, 0.0, shape3);
+    half3 col = mix(half3(0.1, 0.2, 0.8), half3(0.8, 0.2, 0.1), inside);
+
+    return half4(col, 1.0);
 }
 
     """.trimIndent()
