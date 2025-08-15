@@ -31,37 +31,56 @@ import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ColumnScope.TouchCircle(modifier: Modifier = Modifier, f: Float) {
+fun ColumnScope.MarbleCloudTexture(modifier: Modifier = Modifier, f: Float) {
     val shadderCode = """
 uniform float uTime;
 uniform vec2 resolution;
 uniform shader uBitmap;
 uniform vec2 uTouch;
 
-half4 main(vec2 fragCoord) {
-    vec2 uv = fragCoord / resolution;
-    vec2 touchUv = uTouch / resolution;
-
-    // Aspect-corrected UVs for circular distance
-    vec2 aspectUv = uv;
-    aspectUv.x *= resolution.x / resolution.y;
-
-    vec2 aspectTouch = touchUv;
-    aspectTouch.x *= resolution.x / resolution.y;
-
-    // Distance in aspect-corrected space
-    float dist = distance(aspectUv, aspectTouch);
-
-    // Circle radius with animation
-    float radius = 0.2 + abs(sin(uTime) * 0.1);
-    float circle = smoothstep(radius, 0.0, dist);
-
-    half4 img = uBitmap.eval(uv);
-    half4 highlight = img + half4(circle * 0.5);
-
-    return mix(img, highlight, circle);
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
 }
-    """.trimIndent()
+
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    
+    vec2 u = f * f * (3.0 - 2.0 * f); // smooth interpolation
+    return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+}
+float fbm(vec2 p) {
+    float value = 0.0;
+    float scale = 0.5;
+    for (int i = 0; i < 5; i++) {
+        value += noise(p) * scale;
+        p *= 2.0;
+        scale *= 0.5;
+    }
+    return value;
+}
+
+
+half4 main(vec2 fragCoord) {
+    vec2 uv = fragCoord / resolution * uTouch[1]/100.0; // scale texture
+    
+    // marble
+    float n = noise(uv + uTime * 1.0); // wave speed
+    float marble = sin(uv.x * 10.0 + n * 2.0);
+    
+    // cloud
+    float c = fbm(uv + n * 0.05);
+    vec3 color = vec3(c); // grayscale clouds
+    
+    vec3 col = mix(vec3(0.8, 0.8, 0.7), vec3(0.4, 0.4, 0.5), n * 0.5 + 0.5);
+    return mix(half4(color, 1.0),half4(0.1,0.1,0.8,1.0),step(uTouch[0]/1000.0,1-c));
+}
+ """.trimIndent()
 
     val time = remember { mutableStateOf(0f) }
     val shader = remember { RuntimeShader(shadderCode) }
@@ -77,7 +96,7 @@ half4 main(vec2 fragCoord) {
                     touch = offset
 //                    touch = Offset(touch.x+offset0.x,touch.y+offset0.y)
                     if (offset.x < 200 && offset.y < 200) {
-                            weight.value = Integer.MAX_VALUE.toFloat()
+                        weight.value = Integer.MAX_VALUE.toFloat()
                     }else if (offset.x > size.width-200 && offset.y < 200){
                         weight.value = f
                     }

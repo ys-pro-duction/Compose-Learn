@@ -31,39 +31,46 @@ import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ColumnScope.TouchCircle(modifier: Modifier = Modifier, f: Float) {
+fun ColumnScope.StackingShaders(modifier: Modifier = Modifier, f: Float) {
+    val glowMask = """
+        uniform shader uBitmap;
+        uniform float uThreshold;
+        
+        half4 main(vec2 coord) {
+            half4 c = uBitmap.eval(coord);
+            float brightness = dot(c.rgb, vec3(0.299, 0.587, 0.114));
+            return brightness > uThreshold ? c : half4(0.0);
+        }
+    """.trimIndent()
     val shadderCode = """
 uniform float uTime;
 uniform vec2 resolution;
 uniform shader uBitmap;
 uniform vec2 uTouch;
 
+uniform shader uGlowMask;
+
 half4 main(vec2 fragCoord) {
     vec2 uv = fragCoord / resolution;
-    vec2 touchUv = uTouch / resolution;
+    float pixelSize = 1.0 / resolution.x;
 
-    // Aspect-corrected UVs for circular distance
-    vec2 aspectUv = uv;
-    aspectUv.x *= resolution.x / resolution.y;
 
-    vec2 aspectTouch = touchUv;
-    aspectTouch.x *= resolution.x / resolution.y;
-
-    // Distance in aspect-corrected space
-    float dist = distance(aspectUv, aspectTouch);
-
-    // Circle radius with animation
-    float radius = 0.2 + abs(sin(uTime) * 0.1);
-    float circle = smoothstep(radius, 0.0, dist);
-
-    half4 img = uBitmap.eval(uv);
-    half4 highlight = img + half4(circle * 0.5);
-
-    return mix(img, highlight, circle);
+    half4 col = half4(0.0);
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+        col += uBitmap.eval(fragCoord + vec2(i,j) * uTouch[0]/100.0);
+    }
+    }
+    
+//    col += uBitmap.eval()
+    col /= 9;
+    return col;
 }
-    """.trimIndent()
+
+ """.trimIndent()
 
     val time = remember { mutableStateOf(0f) }
+    val glowMaskShader = remember { RuntimeShader(glowMask) }
     val shader = remember { RuntimeShader(shadderCode) }
     val weight = remember { mutableStateOf(f) }
     val bitmap = ImageBitmap.imageResource(R.drawable.pthree)
@@ -77,7 +84,7 @@ half4 main(vec2 fragCoord) {
                     touch = offset
 //                    touch = Offset(touch.x+offset0.x,touch.y+offset0.y)
                     if (offset.x < 200 && offset.y < 200) {
-                            weight.value = Integer.MAX_VALUE.toFloat()
+                        weight.value = Integer.MAX_VALUE.toFloat()
                     }else if (offset.x > size.width-200 && offset.y < 200){
                         weight.value = f
                     }
@@ -86,10 +93,15 @@ half4 main(vec2 fragCoord) {
             .weight(weight.value)
     ) {
         drawIntoCanvas {
+            glowMaskShader.apply {
+                setInputShader("uBitmap", ImageShader(bitmap))
+                setFloatUniform("uThreshold", 0.5f)
+            }
             shader.apply {
                 setFloatUniform("resolution", size.width, size.height)
                 setFloatUniform("uTime", time.value)
                 setInputShader("uBitmap", ImageShader(bitmap))
+                setInputShader("uGlowMask", glowMaskShader)
                 setFloatUniform("uTouch", floatArrayOf(touch.x, touch.y))
             }
             drawRect(ShaderBrush(shader))

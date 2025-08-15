@@ -31,37 +31,55 @@ import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ColumnScope.TouchCircle(modifier: Modifier = Modifier, f: Float) {
+fun ColumnScope.Illusion3D(modifier: Modifier = Modifier, f: Float) {
     val shadderCode = """
 uniform float uTime;
 uniform vec2 resolution;
 uniform shader uBitmap;
 uniform vec2 uTouch;
 
+vec3 renderCircle(vec2 uv, vec2 pos, float radius, vec3 col) {
+    float d = distance(uv, pos);
+    float alpha = smoothstep(radius, radius - 0.005, d);
+    return col * alpha;
+}
 half4 main(vec2 fragCoord) {
     vec2 uv = fragCoord / resolution;
-    vec2 touchUv = uTouch / resolution;
+    uv.x *= resolution.x / resolution.y;
+    uv.x += 0.2;
+    vec2 center = vec2(0.5);
 
-    // Aspect-corrected UVs for circular distance
-    vec2 aspectUv = uv;
-    aspectUv.x *= resolution.x / resolution.y;
+    // Normalize coords to -1..1 range
+    vec2 pos = uv - center;
+    float r = length(pos);
 
-    vec2 aspectTouch = touchUv;
-    aspectTouch.x *= resolution.x / resolution.y;
+    // Sphere mask
+    if (r > 0.4) return half4(0.0);
 
-    // Distance in aspect-corrected space
-    float dist = distance(aspectUv, aspectTouch);
+    // Fake normal (z from circle equation)
+    float z = sqrt(0.4 * 0.4 - r * r);
+    vec3 normal = normalize(vec3(pos, z));
 
-    // Circle radius with animation
-    float radius = 0.2 + abs(sin(uTime) * 0.1);
-    float circle = smoothstep(radius, 0.0, dist);
+    // Light direction (rotating over time)
+    vec3 lightDir = normalize(vec3(sin(uTime), cos(uTime), 0.5));
 
-    half4 img = uBitmap.eval(uv);
-    half4 highlight = img + half4(circle * 0.5);
+    // Diffuse lighting
+    float diffuse = max(dot(normal, lightDir), 0.0);
 
-    return mix(img, highlight, circle);
+    // Specular lighting (shininess)
+    vec3 viewDir = vec3(0.0, 0.0, 1.0);
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 16.0);
+
+    // Base sphere color
+    vec3 baseColor = vec3(0.2, 0.6, 1.0);
+
+    // Combine
+    vec3 color = baseColor * diffuse + vec3(1.0) * spec * 0.8;
+
+    return half4(color, 1.0);
 }
-    """.trimIndent()
+ """.trimIndent()
 
     val time = remember { mutableStateOf(0f) }
     val shader = remember { RuntimeShader(shadderCode) }
@@ -77,7 +95,7 @@ half4 main(vec2 fragCoord) {
                     touch = offset
 //                    touch = Offset(touch.x+offset0.x,touch.y+offset0.y)
                     if (offset.x < 200 && offset.y < 200) {
-                            weight.value = Integer.MAX_VALUE.toFloat()
+                        weight.value = Integer.MAX_VALUE.toFloat()
                     }else if (offset.x > size.width-200 && offset.y < 200){
                         weight.value = f
                     }

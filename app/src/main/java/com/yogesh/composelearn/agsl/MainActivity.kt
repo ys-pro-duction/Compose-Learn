@@ -39,6 +39,10 @@ class MainActivity : ComponentActivity() {
                         TouchCircle(modifier = Modifier.fillMaxSize(),1f)
                         InstStyleFilter(modifier = Modifier.fillMaxSize(),1f)
                         Noise(modifier = Modifier.fillMaxSize(),1f)
+                        MarbleCloudTexture(modifier = Modifier.fillMaxSize(),1f)
+                        GlowShadow(modifier = Modifier.fillMaxSize(),1f)
+                        Illusion3D(modifier = Modifier.fillMaxSize(),1f)
+                        StackingShaders(modifier = Modifier.fillMaxSize(),1f)
                     }
                 }
             }

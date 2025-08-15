@@ -31,7 +31,6 @@ import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-// TODO: NOT WORKING
 fun ColumnScope.Noise(modifier: Modifier = Modifier, f: Float) {
     val shadderCode = """
 uniform float uTime;
