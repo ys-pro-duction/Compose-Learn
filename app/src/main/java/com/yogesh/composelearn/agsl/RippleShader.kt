@@ -8,9 +8,11 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -21,7 +23,7 @@ import org.intellij.lang.annotations.Language
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 @Language("AGSL")
-fun ColumnScope.RippleShader(modifier: Modifier = Modifier, f: Float) {
+fun RowScope.RippleShader(modifier: Modifier = Modifier, f: MutableFloatState) {
     val shaderCode = """
         uniform float2 resolution;
         uniform float time;
@@ -52,14 +54,16 @@ fun ColumnScope.RippleShader(modifier: Modifier = Modifier, f: Float) {
     val shader = remember() { RuntimeShader(shaderCode) }
     val time = remember { mutableStateOf(0f) }
     val animatedTime = animateFloatAsState(time.value, animationSpec = tween(1100, easing = LinearEasing))
-    val weight = remember { mutableStateOf(f) }
+    val weight = remember { mutableStateOf(f.floatValue) }
 
     Canvas(modifier = modifier
         .clickable(onClick = {
             if (weight.value <= 1f) {
                 weight.value = Integer.MAX_VALUE.toFloat()
+                f.floatValue = Integer.MAX_VALUE.toFloat()
             } else {
-                weight.value = f
+                weight.value = 1f
+                f.floatValue = 1f
             }
         })
         .weight(weight.value)) {

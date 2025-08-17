@@ -5,9 +5,10 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -23,7 +24,7 @@ import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ColumnScope.OverlayPatternsImages(modifier: Modifier = Modifier, f: Float) {
+fun RowScope.OverlayPatternsImages(modifier: Modifier = Modifier, f: MutableFloatState) {
     val shadderCode = """
     uniform float uTime;
     uniform vec2 resolution;
@@ -50,17 +51,19 @@ fun ColumnScope.OverlayPatternsImages(modifier: Modifier = Modifier, f: Float) {
 
     val time = remember { mutableStateOf(0f) }
     val shader = remember { RuntimeShader(shadderCode) }
-    val weight = remember { mutableStateOf(f) }
     val bitmap = ImageBitmap.imageResource(R.drawable.pthree)
-    Canvas(
-        modifier = modifier
-            .clickable(onClick = {
-                if (weight.value <= 1f) {
-                    weight.value = Integer.MAX_VALUE.toFloat()
-                } else {
-                    weight.value = f
-                }
-            })
+    val weight = remember { mutableStateOf(f.floatValue) }
+
+    Canvas(modifier = modifier
+        .clickable(onClick = {
+            if (weight.value <= 1f) {
+                weight.value = Integer.MAX_VALUE.toFloat()
+                f.floatValue = Integer.MAX_VALUE.toFloat()
+            } else {
+                weight.value = 1f
+                f.floatValue = 1f
+            }
+        })
             .weight(weight.value)
     ) {
         drawIntoCanvas {

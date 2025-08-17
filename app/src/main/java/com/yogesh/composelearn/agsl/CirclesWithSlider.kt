@@ -9,10 +9,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,14 +25,16 @@ import org.intellij.lang.annotations.Language
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 @Language("AGSL")
-fun ColumnScope.CirclesWithSlider(modifier: Modifier = Modifier, f: Float) {
-    val weight = remember { mutableStateOf(f) }
+fun RowScope.CirclesWithSlider(modifier: Modifier = Modifier, f: MutableFloatState) {
+    val weight = remember { mutableStateOf(f.floatValue) }
     Box(modifier = modifier
         .clickable(onClick = {
             if (weight.value <= 1f) {
                 weight.value = Integer.MAX_VALUE.toFloat()
+                f.floatValue = Integer.MAX_VALUE.toFloat()
             } else {
-                weight.value = f
+                weight.value = 1f
+                f.floatValue = 1f
             }
         })
         .weight(weight.value), contentAlignment = Alignment.BottomCenter) {
